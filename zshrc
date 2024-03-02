@@ -3,7 +3,7 @@
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-	source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
 # If you come from bash you might have to change your $PATH.
@@ -136,20 +136,59 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
-# Alias"s for multiple directory listing commands
-alias la="ls -Alh" # show hidden files
-alias lx="ls -lXBh" # sort by extension
-alias lk="ls -lSrh" # sort by size
-alias lc="ls -lcrh" # sort by change time
-alias lu="ls -lurh" # sort by access time
-alias lr="ls -lRh" # recursive ls
-alias lt="ls -ltrh" # sort by date
-alias lm="ls -alh |more" # pipe through "more"
-alias lw="ls -xAh" # wide listing format
-alias ll="ls -Fls" # long listing format
-alias labc="ls -lap" #alphabetical sort
-alias lf="ls -l | egrep -v "^d"" # files only
-alias ldir="ls -l | egrep "^d"" # directories only
+# # Alias"s for multiple directory listing commands
+# alias la="ls -Alh" # show hidden files
+# alias lx="ls -lXBh" # sort by extension
+# alias lk="ls -lSrh" # sort by size
+# alias lc="ls -lcrh" # sort by change time
+# alias lu="ls -lurh" # sort by access time
+# alias lr="ls -lRh" # recursive ls
+# alias lt="ls -ltrh" # sort by date
+# alias lm="ls -alh |more" # pipe through "more"
+# alias lw="ls -xAh" # wide listing format
+# alias ll="ls -Fls" # long listing format
+# alias labc="ls -lap" #alphabetical sort
+# alias lf="ls -l | egrep -v "^d"" # files only
+# alias ldir="ls -l | egrep "^d"" # directories only
+
+## Install exa package with brew install exa
+
+#List all files equivalent to ls command
+alias ls="exa --icons --tree -L 1 --color always"
+# List all files, including hidden files, with extended details and a header row, colorized, sorted by modification time, and displayed as a tree with a depth of 1
+alias la="exa --long --icons --all --header --color always --time-style default --tree -L 1"
+
+# List all files with extended details, colorized, sorted by extension, and displayed as a tree with a depth of 1
+alias lx="exa --long --icons --sort=extension --color always --tree -L 1"
+
+# List all files with extended details, colorized, sorted by size, and displayed as a tree with a depth of 1
+alias lk="exa --long --icons --sort=size --color always --tree -L 1"
+
+# List all files with extended details, colorized, sorted by change time, and displayed as a tree with a depth of 1
+alias lc="exa --long --icons --sort=changed --color always --tree -L 1"
+
+# List all files with extended details, colorized, sorted by access time, and displayed as a tree with a depth of 1
+alias lu="exa --long --icons --sort=accessed --color always --tree -L 1"
+
+# List all files, including hidden files, with extended details and a header row, colorized, sorted by modification time, and displayed as a tree recursively
+alias lr="exa --long --icons --recurse --all --header --color always --time-style default --tree"
+
+# List all files with extended details, colorized, sorted by modification time, and displayed as a tree with a depth of 1
+alias lt="exa --long --icons --sort=modified --color always --tree -L 1"
+
+# List all files with extended details, colorized, and displayed as a tree with a depth of 1, paginated using "more"
+alias lm="exa --long --icons --all --color always --tree -L 1 | more"
+
+# List all files with extended details, colorized, and displayed as a tree with a depth of 1, with a trailing slash on directories
+alias ll="exa --long --icons --classify --color always --tree -L 1"
+
+# List all files, including hidden files, with extended details and a header row, colorized, and displayed as a tree with a depth of 1
+alias labc="exa --long --icons --all --header --color always --tree -L 1"
+
+
+# List all directories, including hidden directories, with extended details, colorized, sorted by modification time, and displayed as a tree with a depth of 1
+alias ldir="exa --long --classify --color always --tree -L 1 | grep '/$'"
+
 
 # alias chmod commands
 alias mx="chmod a+x"
@@ -203,119 +242,138 @@ alias sha1="openssl sha1"
 
 # Extracts any archive(s) (if unp isn't installed)
 extract () {
-	for archive in $*; do
-		if [ -f $archive ] ; then
-			case $archive in
-				*.tar.bz2)   tar xvjf $archive    ;;
-				*.tar.gz)    tar xvzf $archive    ;;
-				*.bz2)       bunzip2 $archive     ;;
-				*.rar)       rar x $archive       ;;
-				*.gz)        gunzip $archive      ;;
-				*.tar)       tar xvf $archive     ;;
-				*.tbz2)      tar xvjf $archive    ;;
-				*.tgz)       tar xvzf $archive    ;;
-				*.zip)       unzip $archive       ;;
-				*.Z)         uncompress $archive  ;;
-				*.7z)        7z x $archive        ;;
-				*)           echo "don't know how to extract '$archive'..." ;;
-			esac
+    for archive in $*; do
+        if [ -f $archive ] ; then
+            case $archive in
+                *.tar.bz2)   tar xvjf $archive    ;;
+                *.tar.gz)    tar xvzf $archive    ;;
+                *.bz2)       bunzip2 $archive     ;;
+                *.rar)       rar x $archive       ;;
+                *.gz)        gunzip $archive      ;;
+                *.tar)       tar xvf $archive     ;;
+                *.tbz2)      tar xvjf $archive    ;;
+                *.tgz)       tar xvzf $archive    ;;
+                *.zip)       unzip $archive       ;;
+                *.Z)         uncompress $archive  ;;
+                *.7z)        7z x $archive        ;;
+                *)           echo "don't know how to extract '$archive'..." ;;
+            esac
+        else
+            echo "'$archive' is not a valid file!"
+        fi
+    done
+}
+compress () {
+	for item in "$@"; do
+		if [ -e "$item" ] ; then
+			if [ -f "$item" ]; then
+				tar czvf "$item.tar.gz" "$item"
+			elif [ -d "$item" ]; then
+				tar czvf "$item.tar.gz" "$item"
+			else
+				echo "'$item' is not a valid file or folder!"
+			fi
 		else
-			echo "'$archive' is not a valid file!"
+			echo "'$item' does not exist!"
 		fi
 	done
 }
 
+
+
 # Searches for text in all files in the current folder
 ftext ()
 {
-	# -i case-insensitive
-	# -I ignore binary files
-	# -H causes filename to be printed
-	# -r recursive search
-	# -n causes line number to be printed
-	# optional: -F treat search term as a literal, not a regular expression
-	# optional: -l only print filenames and not the matching lines ex. grep -irl "$1" *
-	grep -iIHrnF --color=always "$1" . | less -r
+    # -i case-insensitive
+    # -I ignore binary files
+    # -H causes filename to be printed
+    # -r recursive search
+    # -n causes line number to be printed
+    # optional: -F treat search term as a literal, not a regular expression
+    # optional: -l only print filenames and not the matching lines ex. grep -irl "$1" *
+    grep -iIHrnF --color=always "$1" . | less -r
 }
 
 # Copy file with a progress bar
 cpp()
 {
-	set -e
-	strace -q -ewrite cp -- "${1}" "${2}" 2>&1 \
-	| awk '{
-	count += $NF
-	if (count % 10 == 0) {
-		percent = count / total_size * 100
-		printf "%3d%% [", percent
-		for (i=0;i<=percent;i++)
-			printf "="
-			printf ">"
-			for (i=percent;i<100;i++)
-				printf " "
-				printf "]\r"
-			}
-		}
-	END { print "" }' total_size=$(stat -c '%s' "${1}") count=0
+    set -e
+    strace -q -ewrite cp -- "${1}" "${2}" 2>&1 \
+    | awk '{
+    count += $NF
+    if (count % 10 == 0) {
+        percent = count / total_size * 100
+        printf "%3d%% [", percent
+        for (i=0;i<=percent;i++)
+            printf "="
+            printf ">"
+            for (i=percent;i<100;i++)
+                printf " "
+                printf "]\r"
+            }
+        }
+    END { print "" }' total_size=$(stat -c '%s' "${1}") count=0
 }
 
 # Copy and go to the directory
 cpg ()
 {
-	if [ -d "$2" ];then
-		cp $1 $2 && cd $2
-	else
-		cp $1 $2
-	fi
+    if [ -d "$2" ];then
+        cp $1 $2 && cd $2
+    else
+        cp $1 $2
+    fi
 }
 
 # Move and go to the directory
 mvg ()
 {
-	if [ -d "$2" ];then
-		mv $1 $2 && cd $2
-	else
-		mv $1 $2
-	fi
+    if [ -d "$2" ];then
+        mv $1 $2 && cd $2
+    else
+        mv $1 $2
+    fi
 }
 
 # Create and go to the directory
 mkdirg ()
 {
-	mkdir -p $1
-	cd $1
+    mkdir -p $1
+    cd $1
 }
 
 # Goes up a specified number of directories  (i.e. up 4)
 up ()
 {
-	local d=""
-	limit=$1
-	for ((i=1 ; i <= limit ; i++))
-		do
-			d=$d/..
-		done
-	d=$(echo $d | sed 's/^\///')
-	if [ -z "$d" ]; then
-		d=..
-	fi
-	cd $d
+    local d=""
+    limit=$1
+    for ((i=1 ; i <= limit ; i++))
+        do
+            d=$d/..
+        done
+    d=$(echo $d | sed 's/^\///')
+    if [ -z "$d" ]; then
+        d=..
+    fi
+    cd $d
 }
 
 #Automatically do an ls after each cd
 cd ()
 {
-	if [ -n "$1" ]; then
-		builtin cd "$@" && ls -ltrh
-	else
-		builtin cd ~ && ls -ltrh
-	fi
+    if [ -n "$1" ]; then
+        # builtin cd "$@" && ls -ltrh
+        builtin cd "$@" && exa --long --sort=modified --color always --tree -L 1 --icons
+    else
+        # builtin cd ~ && ls -ltrh
+        builtin cd "$@" && exa --long --sort=modified --color always --tree -L 1 --icons
+    fi
 }
 
 # Returns the last 2 fields of the working directory
 pwdtail ()
 {
-	pwd|awk -F/ '{nlast = NF -1;print $nlast"/"$NF}'
+    pwd|awk -F/ '{nlast = NF -1;print $nlast"/"$NF}'
 }
 
 
@@ -334,39 +392,91 @@ codelxplus()
 {
     code --folder-uri=vscode-remote://ssh-remote+lxplus.cern.ch/$1
 }
+codelxplus8()
+{
+    code --folder-uri=vscode-remote://ssh-remote+lxplus8.cern.ch/$1
+}
 
 codeuscms()
 {
     code --folder-uri=vscode-remote://ssh-remote+login-el7.uscms.org/$1
 }
 
+# configure fzf with your cd command
+cdf()
+{
+  local dir
+  dir=$(find * -type d 2>/dev/null | fzf +m) && cd "$dir" || return
+}
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+alias conda_deact="conda deactivate"
 
 # alias for using system kinit
 alias kinit='/usr/bin/kinit'
 alias kdestroy='/usr/bin/kdestroy'
 
-# alias to log in to servers
-alias lxplus='ssh ptiwari@lxplus.cern.ch'
-alias cmsusrtunnel='ssh -D 9215 -f -C -q -N ptiwari@cmsusr.cern.ch'
-alias cmsusr='ssh ptiwari@cmsusr.cern.ch'
-alias uscms='ssh ptiwari@login-el7.uscms.org'
-alias tifr='ssh ptiwari@ui2.indiacms.res.in'
+# To initialize and mount the EOS
+function mounteos()
+{
+  # kinit -kt ~/.keytab ptiwari@CERN.CH
+  export EOS_MGM_URL=root://eos$1.cern.ch
+  export EOS_FUSE_MGM_ALIAS=eos$1.cern.ch
+  export EOS_FUSE_MOUNTDIR=/Users/ptiwari/eos$1
+  eos fuse mount /Users/ptiwari/eos$1
+};
+
+function umounteos()
+{
+    killall eosd; eos fuse umount /Users/ptiwari/eos$1
+};
+
+alias mounteosall='mounteos project-l; mounteos home-e'
+alias umounteosall='umounteos project-l; umounteos home-e'
+
+#nvim to vim
 alias vim='nvim'
 
+# alias to log in to servers
+alias lxplus='ssh ptiwari@lxplus.cern.ch'
+alias lxplus8='ssh ptiwari@lxplus8.cern.ch -q'
+alias lxplus7='ssh ptiwari@lxplus7.cern.ch -q'
+alias cmsusrtunnel='ssh -D 9215 -f -C -q -N ptiwari@cmsusr.cern.ch'
+alias lxplustunnel='ssh -D 1080 -f -C -q -N ptiwari@lxplus.cern.ch'
+alias cernOffice='ssh ptiwari@128.141.188.170 -q'
+
+alias cmsusr='ssh ptiwari@cmsusr.cern.ch -q'
+alias uscms='ssh ptiwari@login-el7.uscms.org -q'
+alias tifr='ssh ptiwari@ui3.indiacms.res.in -q'
+alias tifrtunnel='ssh -D 9220 -f -C -q -N ptiwari@ui3.indiacms.res.in'
+
 alias reset="clear && printf '\e[3J'"
-alias root="root -l" # --web=off"
-
-# alias for dark OR light theme
-alias light='osascript -e "tell application \"Terminal\" to set current settings of window 1 to settings set \"gruvbox-light\""'
-alias dark='osascript -e "tell application \"Terminal\" to set current settings of window 1 to settings set \"gruvbox-dark\""'
+alias root="root -l --web=firefox" # --web=off"
+alias confdb="open /Users/ptiwari/computation/ConfDB/start.jnlp"
 
 
-source /opt/homebrew/opt/powerlevel10k/powerlevel10k.zsh-theme
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
+# django aliases
+alias makemigrations='python manage.py makemigrations'
+alias migrate='python manage.py migrate'
+alias runserver='python manage.py runserver'
+alias reset_db='python manage.py reset_db'
+alias django_secret_key="python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'"
 # export Homebrew's path
 export PATH="/opt/homebrew/bin:$PATH"
+
+## postgresql paths
+export LDFLAGS="-L/opt/homebrew/opt/postgresql@15/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/postgresql@15/include"
+export PATH="/opt/homebrew/opt/postgresql@15/bin:$PATH"
+
+# brew update
+brew-upgrade() {
+    brew upgrade $(brew list | grep -v miniforge)
+}
+
+source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
